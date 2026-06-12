@@ -15,33 +15,64 @@ const GREEN = "#059669";
 const AMBER = "#D97706";
 const RED = "#DC2626";
 
-const BASE_QUESTIONS = [
-  { id: 1, text: "Do you encrypt customer data at rest?" },
-  { id: 2, text: "Do you encrypt data in transit?" },
-  { id: 3, text: "Do you have a documented incident response plan?" },
-  { id: 4, text: "Do you perform annual penetration testing?" },
-  { id: 5, text: "Do you enforce multi-factor authentication (MFA) for employee access?" },
-  { id: 6, text: "Do you have a subprocessor / vendor management policy?" },
-  { id: 7, text: "Do you hold a SOC 2 Type II or ISO 27001 certification?" },
-  { id: 8, text: "Do you have a data retention and deletion policy?" },
+const STARTER_QUESTIONS = [
+  { id: 1, text: "Do you encrypt customer data at rest?", cat: "Data protection" },
+  { id: 2, text: "Do you encrypt data in transit?", cat: "Data protection" },
+  { id: 3, text: "Do you have a documented incident response plan?", cat: "Incident response" },
+  { id: 4, text: "Do you perform annual penetration testing?", cat: "Security testing" },
+  { id: 5, text: "Do you enforce multi-factor authentication (MFA) for employee access?", cat: "Access control" },
+  { id: 6, text: "Do you have a subprocessor / vendor management policy?", cat: "Vendor management" },
+  { id: 7, text: "Do you hold a SOC 2 Type II or ISO 27001 certification?", cat: "Compliance" },
+  { id: 8, text: "Do you have a data retention and deletion policy?", cat: "Data lifecycle" },
 ];
+
+const EXTRA_QUESTIONS = [
+  { id: 9, text: "How are encryption keys managed, and how often are they rotated?", cat: "Data protection" },
+  { id: 10, text: "Do you maintain a data classification policy?", cat: "Data protection" },
+  { id: 11, text: "Is access granted on a least-privilege basis, with periodic access reviews?", cat: "Access control" },
+  { id: 12, text: "Is privileged access to production managed and are privileged sessions recorded?", cat: "Access control" },
+  { id: 13, text: "Are unused or leaver accounts deactivated within a defined time period?", cat: "Access control" },
+  { id: 14, text: "Do you commit to notifying customers of security incidents within a defined timeline?", cat: "Incident response" },
+  { id: 15, text: "Do you classify incidents by severity with defined response timelines?", cat: "Incident response" },
+  { id: 16, text: "Do you run regular automated vulnerability scans on production systems?", cat: "Security testing" },
+  { id: 17, text: "Do you have defined remediation SLAs based on vulnerability severity?", cat: "Security testing" },
+  { id: 18, text: "Do you operate a bug bounty or responsible disclosure program?", cat: "Security testing" },
+  { id: 19, text: "If you process payments, are you PCI DSS compliant?", cat: "Compliance" },
+  { id: 20, text: "Are you compliant with GDPR or equivalent data privacy regulations?", cat: "Compliance" },
+  { id: 21, text: "Do you sign Data Processing Agreements (DPAs) with your subprocessors?", cat: "Vendor management" },
+  { id: 22, text: "Are customers notified when subprocessors are added or changed?", cat: "Vendor management" },
+  { id: 23, text: "Do you maintain a current, accessible list of your critical subprocessors?", cat: "Vendor management" },
+  { id: 24, text: "Is customer data deleted using a recognised secure-deletion standard (e.g. NIST SP 800-88)?", cat: "Data lifecycle" },
+  { id: 25, text: "Are audit logs retained for at least 12 months?", cat: "Data lifecycle" },
+  { id: 26, text: "Do you disclose where customer data is stored (data residency / regions)?", cat: "Data lifecycle" },
+  { id: 27, text: "Do you maintain a documented and tested business continuity / disaster recovery plan?", cat: "Business continuity" },
+  { id: 28, text: "Do you commit to a defined uptime SLA?", cat: "Business continuity" },
+  { id: 29, text: "Do you have defined Recovery Time Objective (RTO) and Recovery Point Objective (RPO)?", cat: "Business continuity" },
+  { id: 30, text: "Do employees receive regular security awareness training and background checks?", cat: "People security" },
+];
+
+const FULL_QUESTIONS = [...STARTER_QUESTIONS, ...EXTRA_QUESTIONS];
 
 const SAMPLE_DOCS = {
   mature: {
     label: "Helios Cloud - mature vendor",
-    text: `Helios Cloud Services - Information Security Policy (excerpt, v4.2)
+    text: `Helios Cloud Services - Information Security Policy (excerpt, v5.0)
 
-1. Data Protection. All customer data stored in Helios production systems is encrypted at rest using AES-256. All data exchanged between clients and Helios services is encrypted in transit using TLS 1.2 or higher.
+1. Data Protection. All customer data stored in Helios production systems is encrypted at rest using AES-256. All data exchanged between clients and Helios services is encrypted in transit using TLS 1.2 or higher. Encryption keys are managed through a dedicated key management service and rotated every 12 months. Helios maintains a formal data classification policy covering Public, Internal, Confidential and Restricted tiers.
 
-2. Access Control. Access to production systems is restricted on a least-privilege basis. Multi-factor authentication is mandatory for all employees and contractors accessing internal systems.
+2. Access Control. Access to production systems is granted on a least-privilege basis and access rights are reviewed quarterly. Multi-factor authentication is mandatory for all employees and contractors accessing internal systems. All privileged access to production is managed through a Privileged Access Management solution, and privileged sessions are recorded. Unused accounts are deactivated after 30 days of inactivity, and leaver accounts are disabled on the last working day.
 
-3. Incident Response. Helios maintains a documented Incident Response Plan, reviewed twice a year and tested through annual tabletop exercises. Security incidents are triaged within 4 hours and customers are notified within 72 hours where applicable.
+3. Incident Response. Helios maintains a documented Incident Response Plan, reviewed twice a year and tested through annual tabletop exercises. Incidents are classified into four severity levels with defined response timelines for each level. Affected customers are notified of confirmed security incidents within 72 hours.
 
-4. Security Testing. An independent third party performs penetration testing of the Helios platform once per year. Findings are remediated according to severity-based SLAs.
+4. Security Testing. An independent third party performs penetration testing of the Helios platform once per year. Automated vulnerability scans run weekly across all production systems. Findings are remediated under severity-based SLAs: Critical within 7 days, High within 30 days, Medium within 90 days.
 
-5. Compliance. Helios undergoes an annual SOC 2 Type II audit; the latest report is available under NDA.
+5. Compliance. Helios undergoes an annual SOC 2 Type II audit; the latest report is available under NDA. Helios does not currently hold ISO 27001 certification; a gap assessment is in progress. Payment processing is handled by Stripe, which is PCI DSS Level 1 certified.
 
-6. Data Lifecycle. Customer data is retained for the duration of the contract and deleted within 30 days of termination, in line with our Data Retention and Deletion Standard.`,
+6. Vendor Management. Helios maintains a formal Subprocessor and Vendor Management Policy, and all vendors undergo a security review before onboarding. Data Processing Agreements are signed with every subprocessor that handles customer data. A current list of critical subprocessors is published on the Helios Trust Center. Customers are notified by email at least 30 days before any subprocessor change.
+
+7. Data Lifecycle. Customer data is retained for the duration of the contract and deleted within 30 days of termination using NIST SP 800-88 compliant methods. Audit logs and security event records are retained for a minimum of 12 months. Customer data is stored in the AWS Mumbai and Ireland regions.
+
+8. Business Continuity. Helios maintains a documented Business Continuity and Disaster Recovery Plan, tested annually through failover exercises. The platform is operated to a 99.9% monthly uptime commitment. Recovery Time Objective is 4 hours and Recovery Point Objective is 1 hour.`,
   },
   early: {
     label: "Nimbus Labs - early-stage vendor",
@@ -60,14 +91,36 @@ Customer data is backed up daily. Deletion requests are handled manually by the 
 };
 
 const FALLBACK_RESULTS = [
-  { id: 1, answer: "Yes", confidence: "High", evidence: "All customer data stored in Helios production systems is encrypted at rest using AES-256.", rationale: "The policy explicitly states AES-256 encryption at rest.", needs_review: false },
+  { id: 1, answer: "Yes", confidence: "High", evidence: "All customer data stored in Helios production systems is encrypted at rest using AES-256.", rationale: "AES-256 encryption at rest is explicitly stated.", needs_review: false },
   { id: 2, answer: "Yes", confidence: "High", evidence: "All data exchanged between clients and Helios services is encrypted in transit using TLS 1.2 or higher.", rationale: "TLS 1.2+ in transit is explicitly stated.", needs_review: false },
-  { id: 3, answer: "Yes", confidence: "High", evidence: "Helios maintains a documented Incident Response Plan, reviewed twice a year and tested through annual tabletop exercises.", rationale: "A documented, tested IR plan is described.", needs_review: false },
-  { id: 4, answer: "Yes", confidence: "High", evidence: "An independent third party performs penetration testing of the Helios platform once per year.", rationale: "Annual third-party pen testing is explicitly stated.", needs_review: false },
+  { id: 3, answer: "Yes", confidence: "High", evidence: "Helios maintains a documented Incident Response Plan, reviewed twice a year and tested through annual tabletop exercises.", rationale: "A documented, tested incident response plan is described.", needs_review: false },
+  { id: 4, answer: "Yes", confidence: "High", evidence: "An independent third party performs penetration testing of the Helios platform once per year.", rationale: "Annual third-party penetration testing is explicitly stated.", needs_review: false },
   { id: 5, answer: "Yes", confidence: "High", evidence: "Multi-factor authentication is mandatory for all employees and contractors accessing internal systems.", rationale: "MFA is mandatory for all staff.", needs_review: false },
-  { id: 6, answer: "Not found", confidence: "Low", evidence: "", rationale: "The excerpt does not mention subprocessor or vendor management.", needs_review: true },
-  { id: 7, answer: "Partial", confidence: "Medium", evidence: "Helios undergoes an annual SOC 2 Type II audit; the latest report is available under NDA.", rationale: "SOC 2 Type II is confirmed; ISO 27001 is not mentioned.", needs_review: true, parts: [{ item: "SOC 2 Type II", status: "Confirmed" }, { item: "ISO 27001", status: "Not mentioned" }] },
-  { id: 8, answer: "Yes", confidence: "High", evidence: "Customer data is retained for the duration of the contract and deleted within 30 days of termination, in line with our Data Retention and Deletion Standard.", rationale: "A retention and deletion standard is referenced with timelines.", needs_review: false },
+  { id: 6, answer: "Yes", confidence: "High", evidence: "Helios maintains a formal Subprocessor and Vendor Management Policy, and all vendors undergo a security review before onboarding.", rationale: "A formal vendor management policy with pre-onboarding reviews is stated.", needs_review: false },
+  { id: 7, answer: "Partial", confidence: "Medium", evidence: "Helios undergoes an annual SOC 2 Type II audit; the latest report is available under NDA.", rationale: "SOC 2 Type II is confirmed; ISO 27001 certification is explicitly not yet held.", needs_review: true, parts: [{ item: "SOC 2 Type II", status: "Confirmed" }, { item: "ISO 27001", status: "Not mentioned" }] },
+  { id: 8, answer: "Yes", confidence: "High", evidence: "Customer data is retained for the duration of the contract and deleted within 30 days of termination using NIST SP 800-88 compliant methods.", rationale: "Retention and deletion timelines are explicitly defined.", needs_review: false },
+  { id: 9, answer: "Yes", confidence: "High", evidence: "Encryption keys are managed through a dedicated key management service and rotated every 12 months.", rationale: "Key management and a 12-month rotation cycle are stated.", needs_review: false },
+  { id: 10, answer: "Yes", confidence: "High", evidence: "Helios maintains a formal data classification policy covering Public, Internal, Confidential and Restricted tiers.", rationale: "A four-tier data classification policy exists.", needs_review: false },
+  { id: 11, answer: "Yes", confidence: "High", evidence: "Access to production systems is granted on a least-privilege basis and access rights are reviewed quarterly.", rationale: "Least privilege with quarterly access reviews is stated.", needs_review: false },
+  { id: 12, answer: "Yes", confidence: "High", evidence: "All privileged access to production is managed through a Privileged Access Management solution, and privileged sessions are recorded.", rationale: "PAM with session recording is explicitly stated.", needs_review: false },
+  { id: 13, answer: "Yes", confidence: "High", evidence: "Unused accounts are deactivated after 30 days of inactivity, and leaver accounts are disabled on the last working day.", rationale: "Account deactivation timelines are defined for both cases.", needs_review: false },
+  { id: 14, answer: "Yes", confidence: "High", evidence: "Affected customers are notified of confirmed security incidents within 72 hours.", rationale: "A 72-hour customer notification commitment is stated.", needs_review: false },
+  { id: 15, answer: "Yes", confidence: "High", evidence: "Incidents are classified into four severity levels with defined response timelines for each level.", rationale: "Severity classification with timelines is stated.", needs_review: false },
+  { id: 16, answer: "Yes", confidence: "High", evidence: "Automated vulnerability scans run weekly across all production systems.", rationale: "Weekly automated scanning is explicitly stated.", needs_review: false },
+  { id: 17, answer: "Yes", confidence: "High", evidence: "Findings are remediated under severity-based SLAs: Critical within 7 days, High within 30 days, Medium within 90 days.", rationale: "Severity-based remediation SLAs are defined.", needs_review: false },
+  { id: 18, answer: "Not found", confidence: "Low", evidence: "", rationale: "The document does not mention a bug bounty or responsible disclosure program.", needs_review: true },
+  { id: 19, answer: "Yes", confidence: "Medium", evidence: "Payment processing is handled by Stripe, which is PCI DSS Level 1 certified.", rationale: "Payments are outsourced to a PCI DSS Level 1 certified processor; Helios itself holds no direct certification.", needs_review: true },
+  { id: 20, answer: "Not found", confidence: "Low", evidence: "", rationale: "GDPR or equivalent privacy regulation compliance is not mentioned in the document.", needs_review: true },
+  { id: 21, answer: "Yes", confidence: "High", evidence: "Data Processing Agreements are signed with every subprocessor that handles customer data.", rationale: "DPAs with all data-handling subprocessors are stated.", needs_review: false },
+  { id: 22, answer: "Yes", confidence: "High", evidence: "Customers are notified by email at least 30 days before any subprocessor change.", rationale: "A 30-day advance notification commitment is stated.", needs_review: false },
+  { id: 23, answer: "Yes", confidence: "High", evidence: "A current list of critical subprocessors is published on the Helios Trust Center.", rationale: "A public, current subprocessor list is maintained.", needs_review: false },
+  { id: 24, answer: "Yes", confidence: "High", evidence: "deleted within 30 days of termination using NIST SP 800-88 compliant methods", rationale: "Deletion follows the NIST SP 800-88 standard.", needs_review: false },
+  { id: 25, answer: "Yes", confidence: "High", evidence: "Audit logs and security event records are retained for a minimum of 12 months.", rationale: "A 12-month minimum log retention period is stated.", needs_review: false },
+  { id: 26, answer: "Yes", confidence: "High", evidence: "Customer data is stored in the AWS Mumbai and Ireland regions.", rationale: "Data residency regions are explicitly disclosed.", needs_review: false },
+  { id: 27, answer: "Yes", confidence: "High", evidence: "Helios maintains a documented Business Continuity and Disaster Recovery Plan, tested annually through failover exercises.", rationale: "A documented, annually tested BCP/DR plan is stated.", needs_review: false },
+  { id: 28, answer: "Yes", confidence: "High", evidence: "The platform is operated to a 99.9% monthly uptime commitment.", rationale: "A 99.9% monthly uptime commitment is stated.", needs_review: false },
+  { id: 29, answer: "Yes", confidence: "High", evidence: "Recovery Time Objective is 4 hours and Recovery Point Objective is 1 hour.", rationale: "RTO of 4 hours and RPO of 1 hour are defined.", needs_review: false },
+  { id: 30, answer: "Not found", confidence: "Low", evidence: "", rationale: "Security awareness training and background checks are not mentioned in the document.", needs_review: true },
 ];
 
 const PHASES = [
@@ -258,10 +311,28 @@ function lexicalLookup(question, doc) {
   return bestScore >= 1 ? best : "";
 }
 
+// Offline mode for the user's own documents: honest keyword search per question
+function offlineResults(qList, doc) {
+  return qList.map((q) => {
+    const related = lexicalLookup(q.text, doc);
+    return {
+      id: q.id,
+      answer: "Not found",
+      confidence: "Low",
+      evidence: "",
+      related_excerpt: related,
+      rationale: related
+        ? "Offline demo: closest matching line found by keyword search - live AI would verify and give the full answer."
+        : "Offline demo: keyword search found nothing related in this document - live AI would confirm.",
+      needs_review: true,
+    };
+  });
+}
+
 // ---------- Locate a quote: line number (and page for PDFs) ----------
 function findLocation(quote, doc, pages) {
   if (!quote) return null;
-  const norm = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
+  const norm = (s) => s.toLowerCase().replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, " ").trim();
   const nq = norm(quote);
   const head = nq.split(" ").slice(0, 6).join(" ");
   const lines = doc.split("\n");
@@ -284,19 +355,47 @@ function findLocation(quote, doc, pages) {
 // ---------- Build highlight spans for the Answer Map ----------
 function buildHighlights(doc, items) {
   const found = [];
+  const flex = (s) => s
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/['’‘]/g, "['’‘]")
+    .replace(/["“”]/g, "[\"“”]")
+    .replace(/\s+/g, "\\s+");
   for (const it of items) {
     if (!it.quote) continue;
-    const esc = it.quote.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
-    try {
-      const re = new RegExp(esc, "i");
-      const m = doc.match(re);
-      if (m && m.index !== undefined) found.push({ start: m.index, end: m.index + m[0].length, ...it });
-    } catch (e) { /* skip bad pattern */ }
+    let m = null;
+    try { m = doc.match(new RegExp(flex(it.quote), "i")); } catch (e) { /* skip */ }
+    if (!m) {
+      const head = it.quote.split(/\s+/).slice(0, 8).join(" ");
+      if (head.length > 12) {
+        try { m = doc.match(new RegExp(flex(head), "i")); } catch (e) { /* skip */ }
+      }
+    }
+    if (m && m.index !== undefined) found.push({ start: m.index, end: m.index + m[0].length, ...it });
   }
   found.sort((a, b) => a.start - b.start);
   const out = []; let last = 0;
   for (const f of found) { if (f.start < last) continue; out.push(f); last = f.end; }
   return out;
+}
+
+// Detect mixed verdicts inside a plain rationale sentence, e.g.
+// "SOC 2 Type II is confirmed; ISO 27001 certification is explicitly not yet held."
+function splitFindings(rationale) {
+  if (!rationale) return null;
+  const clauses = rationale
+    .split(/;|(?:\.\s+)|(?:,?\s+but\s+)|(?:,?\s+however,?\s+)|(?:,?\s+while\s+)|(?:,?\s+whereas\s+)/i)
+    .map((c) => c.trim().replace(/\.$/, ""))
+    .filter((c) => c.length > 3);
+  if (clauses.length < 2) return null;
+  const NEG = /\b(not|no|never|missing|absent|lacking|unclear|without|yet to|isn'?t|aren'?t|doesn'?t|don'?t|cannot|can'?t|fails?)\b/i;
+  const PART = /\b(in progress|partial(ly)?|rolling out|pending|planned|some|incomplete|expects? to|intends? to)\b/i;
+  const findings = clauses.map((c) => ({
+    text: c,
+    status: NEG.test(c) ? "neg" : PART.test(c) ? "part" : "pos",
+  }));
+  const hasPos = findings.some((f) => f.status === "pos");
+  const hasNonPos = findings.some((f) => f.status !== "pos");
+  return hasPos && hasNonPos ? findings : null;
 }
 
 // ---------- Prefilled follow-up message templates ----------
@@ -320,12 +419,14 @@ export default function ProofPilot() {
   const [fileError, setFileError] = useState(null);
   const [filePages, setFilePages] = useState(null);
   const [parsing, setParsing] = useState(false);
-  const [questions, setQuestions] = useState(BASE_QUESTIONS);
+  const [qSetKey, setQSetKey] = useState("starter");
+  const [questions, setQuestions] = useState(STARTER_QUESTIONS);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState(0);
   const [error, setError] = useState(null);
-  const [usedFallback, setUsedFallback] = useState(false);
+  const [fallbackCount, setFallbackCount] = useState(0);
+  const [runNote, setRunNote] = useState("");
   const [decisions, setDecisions] = useState({});
   const [activeAction, setActiveAction] = useState(null); // {id, type:'approve'|'edit'|'followup'}
   const [draft, setDraft] = useState("");
@@ -339,6 +440,7 @@ export default function ProofPilot() {
   const [ansFilter, setAnsFilter] = useState("all");
   const [confFilter, setConfFilter] = useState("all");
   const [decisionFilter, setDecisionFilter] = useState("all");
+  const [showQInfo, setShowQInfo] = useState(false);
   const [searchQ, setSearchQ] = useState("");
   const [customQuestion, setCustomQuestion] = useState("");
   const [askLoading, setAskLoading] = useState(false);
@@ -349,6 +451,7 @@ export default function ProofPilot() {
   const scrolledRef = useRef(false);
 
   const docText = docKey === "custom" ? customText : SAMPLE_DOCS[docKey].text;
+  const baseSet = qSetKey === "full" ? FULL_QUESTIONS : STARTER_QUESTIONS;
   const pages = docKey === "custom" ? filePages : null;
 
   useEffect(() => {
@@ -370,7 +473,7 @@ export default function ProofPilot() {
     setResults(null); setDecisions({}); setError(null);
     setFilter("all"); setAnsFilter("all"); setConfFilter("all"); setDecisionFilter("all");
     setActiveAction(null); setDraft("");
-    setQuestions(BASE_QUESTIONS); setSearchQ("");
+    setQuestions(baseSet); setSearchQ("");
     setCustomQuestion(""); setAskInfo(null);
   }
 
@@ -448,17 +551,17 @@ export default function ProofPilot() {
   // ---------- Prompt rules ----------
   const RULES = `Respond ONLY with a raw JSON array (no markdown, no backticks, no preamble). One object per question:
 {"id": <number>, "answer": "Yes"|"No"|"Partial"|"Not found", "confidence": "High"|"Medium"|"Low", "evidence": "<short exact quote from the document that DIRECTLY answers the question, or empty string>", "related_excerpt": "<only when evidence is empty: the closest topically-related exact quote from the document, or empty string if nothing related exists>", "rationale": "<one plain-English sentence>", "needs_review": <true if confidence is not High, or answer is Partial/Not found/No>, "parts": [include ONLY when the question asks about two or more distinct items (e.g. "X or Y"); one entry per item: {"item": "<name>", "status": "Confirmed"|"Partially covered"|"Not mentioned"}]}
-Rules: "evidence" must directly prove the answer - never put loosely related text there. If the document does not directly answer, set answer to "Not found", leave evidence empty, and put the closest related exact line (if any) in "related_excerpt". Use "Partial" when a control is incomplete, in progress, or only some parts of the question are confirmed. Keep "evidence" and "related_excerpt" under 25 words each and "rationale" under 15 words. Be conservative: when in doubt, lower confidence and set needs_review true.`;
+Rules: "evidence" must directly prove the answer - never put loosely related text there. If the document does not directly answer, set answer to "Not found", leave evidence empty, and put the closest related exact line (if any) in "related_excerpt". Use "Partial" when a control is incomplete, in progress, or only some parts of the question are confirmed. If the rationale mentions one item as confirmed and another as missing or not held, the "parts" array is REQUIRED. Keep "evidence" and "related_excerpt" under 25 words each and "rationale" under 15 words. Be conservative: when in doubt, lower confidence and set needs_review true.`;
 
   // ---------- AI fill ----------
   async function runPrefill() {
     if (!docText.trim()) { setError("Upload a file or paste a policy document first."); return; }
-    const qList = BASE_QUESTIONS;
+    const qList = baseSet;
     setLoading(true); setError(null); setResults(null); setDecisions({});
-    setUsedFallback(false); setFilter("all"); setAnsFilter("all"); setConfFilter("all"); setDecisionFilter("all");
+    setFallbackCount(0); setRunNote(""); setFilter("all"); setAnsFilter("all"); setConfFilter("all"); setDecisionFilter("all");
     setActiveAction(null); setDraft(""); setQuestions(qList); setSearchQ(""); setAskInfo(null);
 
-    const prompt = `You are an AI assistant inside a third-party risk review platform. A vendor has provided a security policy document. Answer the security questionnaire below using ONLY information found in the document. Never assume anything that is not stated.
+    const makePrompt = (chunk) => `You are an AI assistant inside a third-party risk review platform. A vendor has provided a security policy document. Answer the security questionnaire below using ONLY information found in the document. Never assume anything that is not stated.
 
 DOCUMENT:
 """
@@ -466,21 +569,40 @@ ${docText.slice(0, 12000)}
 """
 
 QUESTIONNAIRE:
-${qList.map((q) => `${q.id}. ${q.text}`).join("\n")}
+${chunk.map((q) => `${q.id}. ${q.text}`).join("\n")}
 
 ${RULES}`;
 
+    const chunks = [];
+    for (let i = 0; i < qList.length; i += 8) chunks.push(qList.slice(i, i + 8));
+
     const minDelay = new Promise((r) => setTimeout(r, 3600));
+    const collected = [];
+    let offline = 0;
     try {
-      const [parsed] = await Promise.all([callClaude(prompt), minDelay]);
-      if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("Bad shape");
-      setResults(parsed);
-    } catch (err) {
-      console.error("AI fill failed, using offline demo data:", err);
+      for (let ci = 0; ci < chunks.length; ci++) {
+        const chunk = chunks[ci];
+        if (chunks.length > 1) setRunNote(`Answering questions ${chunk[0].id}-${chunk[chunk.length - 1].id} of ${qList.length}…`);
+        try {
+          const parsed = await callClaude(makePrompt(chunk));
+          const arr = Array.isArray(parsed) ? parsed : [parsed];
+          const got = chunk.map((q) => arr.find((x) => x && x.id === q.id && x.answer));
+          if (got.some((g) => !g)) throw new Error("Incomplete chunk reply");
+          collected.push(...got);
+        } catch (err) {
+          console.warn("Chunk " + (ci + 1) + " fell back to offline answers:", err);
+          offline += chunk.length;
+          if (docKey === "mature") {
+            collected.push(...FALLBACK_RESULTS.filter((fr) => chunk.some((q) => q.id === fr.id)));
+          } else {
+            collected.push(...offlineResults(chunk, docText));
+          }
+        }
+      }
       await minDelay;
-      setResults(FALLBACK_RESULTS);
-      setUsedFallback(true);
-    } finally { setLoading(false); }
+      setResults(collected);
+      setFallbackCount(offline);
+    } finally { setRunNote(""); setLoading(false); }
   }
 
   // ---------- Ask your own question ----------
@@ -521,7 +643,7 @@ The array must contain exactly one object with id ${newId}.`;
       setAskInfo("Live AI could not be reached, so an honest keyword search of the document was used instead - result added below, flagged for your review.");
     }
     item.id = newId;
-    setQuestions((qs) => [...qs, { id: newId, text: qt }]);
+    setQuestions((qs) => [...qs, { id: newId, text: qt, custom: true }]);
     setResults((rs) => [...rs, item]);
     setCustomQuestion(""); setSearchQ(""); setFilter("all");
     setAskLoading(false);
@@ -600,7 +722,7 @@ The array must contain exactly one object with id ${newId}.`;
     const decision = decisions[q.id];
     const isOpenFlag = r.needs_review && !decision;
     const isActive = activeAction && activeAction.id === q.id;
-    const isCustom = q.id > BASE_QUESTIONS.length;
+    const isCustom = !!q.custom;
     const shownAnswer = (decision && decision.newAnswer) || r.answer;
     const loc = findLocation(r.evidence || r.related_excerpt, docText, pages);
     const locLabel = loc ? (loc.page ? `Page ${loc.page} · Line ${loc.line || "?"}` : `Line ${loc.line}`) : null;
@@ -644,6 +766,9 @@ The array must contain exactly one object with id ${newId}.`;
           <p className="text-sm font-semibold flex-1 m-0 leading-relaxed" style={{ minWidth: 180, color: INK }}>
             <span className="inline-flex w-5 h-5 rounded-md items-center justify-center text-xs font-bold mr-2 align-middle" style={{ background: "#EEF0F5", color: "#5A6072" }}>{q.id}</span>
             {q.text}
+            {q.cat && (
+              <span className="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full align-middle" style={{ background: "#F1F2F6", color: "#7A8094" }}>{q.cat}</span>
+            )}
             {isCustom && (
               <span className="ml-2 text-xs font-bold px-2 py-0.5 rounded-full align-middle" style={{ background: "#EDEDFB", color: INDIGO_DK }}>✨ your question</span>
             )}
@@ -729,7 +854,33 @@ The array must contain exactly one object with id ${newId}.`;
           </div>
         )}
 
-        <p className="mt-2.5 text-xs m-0 leading-relaxed" style={{ color: "#5A6072" }}>{r.rationale}</p>
+        {(() => {
+          const hasParts = r.parts && r.parts.length > 1;
+          const findings = !hasParts ? splitFindings(r.rationale) : null;
+          if (!findings) {
+            return <p className="mt-2.5 text-xs m-0 leading-relaxed" style={{ color: "#5A6072" }}>{r.rationale}</p>;
+          }
+          return (
+            <div className="mt-3 rounded-xl p-3" style={{ background: "#F7F8FB", border: "1px solid #E6E8EE" }}>
+              <p className="text-xs font-bold m-0 mb-2" style={{ color: "#3A4154" }}>This answer has mixed findings - each one shown separately:</p>
+              <div className="space-y-1.5">
+                {findings.map((f, i) => {
+                  const st = f.status === "pos"
+                    ? { icon: "✔", fg: GREEN, bg: "#E5F6F1" }
+                    : f.status === "part"
+                      ? { icon: "◐", fg: AMBER, bg: "#FEF6E7" }
+                      : { icon: "✖", fg: RED, bg: "#FEE9E7" };
+                  return (
+                    <div key={i} className="flex items-start gap-2 text-xs font-semibold rounded-lg px-2.5 py-1.5" style={{ background: st.bg }}>
+                      <span style={{ color: st.fg }}>{st.icon}</span>
+                      <span style={{ color: INK }}>{f.text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
 
         {decision && decision.note && (
           <div className="mt-3 rounded-lg px-3.5 py-2.5 text-xs leading-relaxed" style={{ background: "#F7F8FB", border: "1px solid #E6E8EE" }}>
@@ -989,6 +1140,26 @@ The array must contain exactly one object with id ${newId}.`;
               ))}
             </div>
 
+            <div className="flex items-center gap-2 flex-wrap mb-4">
+              <span className="text-xs font-bold" style={{ color: "#5A6072" }}>Questionnaire:</span>
+              {[["starter", "Starter - 8 questions"], ["full", "Full review - 30 questions"]].map(([k, label]) => (
+                <button key={k}
+                  onClick={() => {
+                    setQSetKey(k);
+                    setQuestions(k === "full" ? FULL_QUESTIONS : STARTER_QUESTIONS);
+                    setResults(null); setDecisions({}); setSearchQ("");
+                    setFilter("all"); setAnsFilter("all"); setConfFilter("all"); setDecisionFilter("all");
+                    setActiveAction(null); setAskInfo(null);
+                  }}
+                  className="pp-chipbtn text-xs font-bold px-3.5 py-1.5 rounded-full"
+                  style={qSetKey === k
+                    ? { background: INK, color: "#fff", border: `1px solid ${INK}` }
+                    : { background: "#fff", color: "#3A4154", border: "1px solid #DDE0E8" }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+
             {docKey === "custom" && (
               <div className="mb-3">
                 <label className="pp-chipbtn flex items-center justify-center gap-2 w-full rounded-xl px-4 py-3.5 cursor-pointer text-sm font-bold"
@@ -1049,6 +1220,9 @@ The array must contain exactly one object with id ${newId}.`;
                     <span className={i === phase ? "font-semibold" : ""}>{p}</span>
                   </div>
                 ))}
+                {runNote && (
+                  <p className="text-xs font-bold m-0 pt-1" style={{ color: INDIGO_DK }}>{runNote}</p>
+                )}
               </div>
             )}
 
@@ -1065,12 +1239,22 @@ The array must contain exactly one object with id ${newId}.`;
           <div className="flex items-center gap-2 mb-3 flex-wrap" style={{ animation: "ppFadeUp .6s .45s ease both" }}>
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 2</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>ANSWERS, FILLED WITH PROOF</h2>
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full cursor-help"
-              style={{ background: "#EEF0FB", color: INDIGO_DK, border: "1px solid #D8DAF5" }}
-              title="These 8 questions are a representative sample, modeled on standard security questionnaires like SIG (Shared Assessments) and CAIQ (Cloud Security Alliance). The engine itself is questionnaire-agnostic - bring any template and it answers from the document with proof.">
-              ⓘ Sample questionnaire - modeled on SIG / CAIQ-style reviews
-            </span>
+            <button onClick={() => setShowQInfo((v) => !v)}
+              className="pp-chipbtn inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full"
+              style={{ background: "#fff", color: INDIGO_DK, border: `1.5px solid ${INDIGO}`, boxShadow: "0 3px 10px rgba(91,91,214,.20)" }}>
+              <span className="w-4 h-4 rounded-full flex items-center justify-center text-white" style={{ background: `linear-gradient(135deg, ${INDIGO}, #11B395)`, fontSize: 10, fontStyle: "italic", fontFamily: "Georgia, serif" }}>i</span>
+              About these questions
+              <span style={{ fontSize: 8 }}>{showQInfo ? "▲" : "▼"}</span>
+            </button>
           </div>
+
+          {showQInfo && (
+            <div className="rounded-xl px-4 py-3 mb-4 text-xs leading-relaxed" style={{ background: "#fff", border: "1.5px solid #D8DAF5", boxShadow: "0 10px 28px rgba(91,91,214,.14)", color: "#3A4154", animation: "ppFadeUp .25s ease both" }}>
+              <span className="font-bold" style={{ color: INDIGO_DK }}>Where do these questions come from? </span>
+              They are a representative set modeled on standard industry security questionnaires such as SIG (Shared Assessments) and CAIQ (Cloud Security Alliance), covering ten control areas: data protection, access control, incident response, security testing, compliance, vendor management, data lifecycle, business continuity and people security. The engine itself is questionnaire-agnostic - bring any template and it answers from the document with proof.
+              <button onClick={() => setShowQInfo(false)} className="ml-2 font-bold underline" style={{ color: "#7A8094" }}>close</button>
+            </div>
+          )}
 
           {!results && !loading && (
             <div className="rounded-2xl p-12 text-center bg-white" style={{ border: "1.5px dashed #D5D8E0", animation: "ppFadeUp .6s .5s ease both" }}>
@@ -1096,9 +1280,11 @@ The array must contain exactly one object with id ${newId}.`;
 
           {results && (
             <div>
-              {usedFallback && (
+              {fallbackCount > 0 && (
                 <div className="text-xs px-4 py-3 rounded-xl mb-4 font-medium" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B44", animation: "ppFadeUp .4s ease both" }}>
-                  Demo mode: live AI is not connected on this link, so a pre-computed sample run is shown - every feature below still works exactly as it would.
+                  {docKey === "mature"
+                    ? `Demo mode: ${fallbackCount === total ? "live AI is not connected here, so the pre-computed sample run is shown" : `${fallbackCount} of ${total} answers come from the pre-computed sample run`} - every feature still works.`
+                    : `Live AI could not answer ${fallbackCount} of ${total} questions just now - those show the closest matching line from your document (keyword search) and are flagged for your review. Run again, or use the live environment, for verified answers with proof.`}
                 </div>
               )}
 
@@ -1224,13 +1410,16 @@ The array must contain exactly one object with id ${newId}.`;
               <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>ANSWER MAP - THE DOCUMENT, HIGHLIGHTED</h2>
               <span className="text-xs" style={{ color: "#7A8094" }}>Hover any highlight to see its question · click a 📍 location chip above to jump here</span>
             </div>
-            <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)" }}>
+            <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)", background: "#F0F1F6" }}>
               <div className="flex gap-4 mb-3 text-xs font-semibold flex-wrap" style={{ color: "#5A6072" }}>
                 <span className="inline-flex items-center gap-1.5"><span className="w-3 h-3 rounded inline-block" style={{ background: "rgba(16,185,129,.45)" }} /> Proof of an answer</span>
                 <span className="inline-flex items-center gap-1.5"><span className="w-3 h-3 rounded inline-block" style={{ background: "rgba(245,158,11,.5)" }} /> Related line (not a direct answer)</span>
-                <span className="inline-flex items-center gap-1.5"><span className="text-xs font-bold px-1.5 rounded" style={{ background: "#EEF0F5", color: INDIGO_DK }}>Q3</span> = question number</span>
+                <span className="inline-flex items-center gap-1.5"><span className="text-xs font-bold rounded-full" style={{ background: GREEN, color: "#fff", padding: "1px 8px" }}>Que 3</span> = Question Number</span>
               </div>
-              <div className="text-xs leading-7 whitespace-pre-wrap rounded-xl p-4" style={{ background: "#FCFCFD", border: "1px solid #EEF0F5", color: "#3A4154" }}>
+              <div className="whitespace-pre-wrap rounded-lg mx-auto" style={{ background: "#FFFFFF", border: "1px solid #E2E4EC", boxShadow: "0 12px 34px rgba(26,31,54,.10)", color: "#1F2430", maxWidth: 820, padding: "34px 42px", fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 13, lineHeight: 1.95 }}>
+                <div style={{ borderBottom: "1px solid #E6E8EE", marginBottom: 18, paddingBottom: 10, fontFamily: "ui-sans-serif, system-ui, sans-serif", fontSize: 11, color: "#7A8094", fontWeight: 700, letterSpacing: ".04em" }}>
+                  📄 {docKey === "custom" ? (fileInfo ? fileInfo.name : "Pasted document") : SAMPLE_DOCS[docKey].label} - with every answer highlighted in place
+                </div>
                 {(() => {
                   const parts = [];
                   let cursor = 0;
@@ -1239,14 +1428,14 @@ The array must contain exactly one object with id ${newId}.`;
                     parts.push(
                       <span key={"h" + i} id={"hl-q" + h.qid}
                         className={"pp-hl " + (h.kind === "proof" ? "proof" : "rel")}
-                        data-q={"Q" + h.qid + ": " + h.question}
+                        data-q={"Question " + h.qid + ": " + h.question}
                         onClick={() => {
                           const el = document.getElementById("card-q" + h.qid);
                           if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
                         }}
                         style={flashId === h.qid ? { animation: "ppFlash 1.4s ease both" } : undefined}>
                         {docText.slice(h.start, h.end)}
-                        <sup className="font-bold ml-0.5" style={{ color: h.kind === "proof" ? GREEN : AMBER, fontSize: 9 }}>Q{h.qid}</sup>
+                        <span className="font-bold ml-1 rounded-full" style={{ background: h.kind === "proof" ? GREEN : AMBER, color: "#fff", fontSize: 9, padding: "1px 7px", fontFamily: "ui-sans-serif, system-ui, sans-serif", verticalAlign: "middle", whiteSpace: "nowrap" }}>Que {h.qid}</span>
                       </span>
                     );
                     cursor = h.end;
