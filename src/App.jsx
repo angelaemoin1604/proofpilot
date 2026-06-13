@@ -1121,15 +1121,15 @@ The array must contain exactly one object with id ${newId}.`;
       </header>
 
       <main className="max-w-6xl mx-auto px-5 md:px-8 py-9 flex flex-col gap-7">
-        <div className="grid gap-7 lg:grid-cols-12" style={{ height: "85vh", overflow: "hidden" }}>
+        <div className="grid gap-7 lg:grid-cols-12" style={{ alignItems: "start" }}>
         {/* ============ LEFT: DOCUMENT ============ */}
-        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both", height: "85vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both", height: "88vh", display: "flex", flexDirection: "column" }}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 1</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>THE VENDOR'S DOCUMENT</h2>
           </div>
 
-          <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)", flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: 0 }}>
+          <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", minHeight: 0 }}>
             <div className="flex gap-2 flex-wrap mb-4">
               {[["mature", SAMPLE_DOCS.mature.label], ["early", SAMPLE_DOCS.early.label], ["custom", "My own document"]].map(([k, label]) => (
                 <button key={k} onClick={() => { setDocKey(k); resetAll(); setFileInfo(null); setFileError(null); setFilePages(null); }}
@@ -1238,7 +1238,7 @@ The array must contain exactly one object with id ${newId}.`;
         </section>
 
         {/* ============ RIGHT: ANSWERS ============ */}
-        <section ref={resultsRef} className="lg:col-span-7" style={{ height: "85vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        <section ref={resultsRef} className="lg:col-span-7" style={{ height: "88vh", display: "flex", flexDirection: "column" }}>
           <div className="flex items-center gap-2 mb-3 flex-wrap" style={{ animation: "ppFadeUp .6s .45s ease both" }}>
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 2</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>ANSWERS, FILLED WITH PROOF</h2>
@@ -1354,7 +1354,7 @@ The array must contain exactly one object with id ${newId}.`;
                 )}
               </div>
 
-              <div className="overflow-y-auto pr-1" style={{ maxHeight: "55vh", scrollbarWidth: "thin" }}>
+              <div className="overflow-y-auto pr-1" style={{ flex: 1, minHeight: 0, scrollbarWidth: "thin" }}>
               {groups.map((g) => (
                 <div key={g.key} className="mb-7">
                   <div className="flex items-center gap-2 mb-3 sticky top-0 z-10 py-1" style={{ background: "linear-gradient(180deg, #F6F7FF 75%, transparent)" }}>
