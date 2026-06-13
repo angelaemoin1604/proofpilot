@@ -809,7 +809,23 @@ The array must contain exactly one object with id ${newId}.`;
               <span className="ml-2 text-xs font-bold px-2 py-0.5 rounded-full align-middle" style={{ background: "#EDEDFB", color: INDIGO_DK }}>✨ your question</span>
             )}
           </p>
-          <div className="flex gap-2 items-center flex-wrap">{answerChip(shownAnswer, decision && decision.type === "edited")}{confChip(r.confidence)}</div>
+          <div className="flex gap-2 items-center flex-wrap">
+            {answerChip(shownAnswer, decision && decision.type === "edited")}
+            {confChip(r.confidence)}
+            {isCustom && (
+              <button
+                onClick={() => {
+                  setQuestions((qs) => qs.filter((x) => x.id !== q.id));
+                  setResults((rs) => rs.filter((x) => x.id !== q.id));
+                  const d = { ...decisions }; delete d[q.id]; setDecisions(d);
+                }}
+                title="Delete this question"
+                className="pp-chipbtn inline-flex items-center justify-center w-7 h-7 rounded-lg"
+                style={{ background: "#FEE9E7", color: RED, border: "1px solid #F5B5B0", flexShrink: 0 }}>
+                🗑
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Multi-part breakdown */}
@@ -1415,7 +1431,7 @@ The array must contain exactly one object with id ${newId}.`;
         <section style={{ animation: "ppFadeUp .5s ease both" }}>
           <div className="max-w-6xl mx-auto" style={{ marginTop: 8 }}>
             {/* Search */}
-              <div className="flex gap-2 mb-3 flex-wrap items-center">
+              <div className="flex flex-wrap items-center" style={{ gap: 8, marginBottom: 14 }}>
                 <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2.5 flex-1" style={{ border: "1.5px solid #DDE0E8", minWidth: 200 }}>
                   <span style={{ fontSize: 13, opacity: .55 }}>🔍</span>
                   <input value={searchQ} onChange={(e) => setSearchQ(e.target.value)}
@@ -1428,7 +1444,7 @@ The array must contain exactly one object with id ${newId}.`;
               </div>
 
               {/* Filters - every dropdown defaults to All */}
-              <div className="flex gap-2 mb-5 flex-wrap items-center">
+              <div className="flex gap-2 flex-wrap items-center" style={{ marginBottom: 20 }}>
                 <span className="text-xs font-bold" style={{ color: "#5A6072" }}>Filters:</span>
                 <FilterPopover label="Status" value={filter} onChange={setFilter}
                   options={[["all", `All (${total})`], ["flagged", `Needs your review (${flagged})`], ["ready", `Verified (${auto})`]]} />
@@ -1446,9 +1462,9 @@ The array must contain exactly one object with id ${newId}.`;
                 )}
               </div>
 
-              <div className="overflow-y-auto pr-1" style={{ maxHeight: "65vh", scrollbarWidth: "thin" }}>
+              <div className="overflow-y-auto pr-1" style={{ maxHeight: "65vh", scrollbarWidth: "thin", paddingBottom: 8 }}>
               {groups.map((g) => (
-                <div key={g.key} className="mb-7">
+                <div key={g.key} style={{ marginBottom: 28 }}>
                   <div className="flex items-center gap-2 mb-3 sticky top-0 z-10 py-1" style={{ background: "linear-gradient(180deg, #F6F7FF 75%, transparent)" }}>
                     <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: g.color }} />
                     <h3 className="text-sm font-bold m-0" style={{ color: INK }}>{g.title}</h3>
@@ -1467,7 +1483,7 @@ The array must contain exactly one object with id ${newId}.`;
               </div>
 
               {/* Ask your own question */}
-              <div className="rounded-2xl p-5 mb-4 bg-white" style={{ border: "1.5px solid #C9C9F2", boxShadow: "0 6px 20px rgba(91,91,214,.10)" }}>
+              <div className="rounded-2xl p-5 bg-white" style={{ border: "1.5px solid #C9C9F2", boxShadow: "0 8px 28px rgba(91,91,214,.15)", marginTop: 24 }}>
                 <div className="flex items-center gap-2 mb-1">
                   <span style={{ fontSize: 15 }}>✨</span>
                   <h3 className="text-sm font-bold m-0" style={{ color: INK }}>Ask the document your own question</h3>
