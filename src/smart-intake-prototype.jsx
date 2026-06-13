@@ -241,11 +241,11 @@ function StatTile({ value, label, run }) {
 }
 
 function FilterPopover({ label, value, onChange, options }) {
-  const [open, setOpen] = React.useState(false);
-  const ref = React.useRef(null);
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
   const active = value !== "all";
   const selectedLabel = (options.find(([v]) => v === value) || options[0])[1];
-  React.useEffect(() => {
+  useEffect(() => {
     function handleClick(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
