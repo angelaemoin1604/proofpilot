@@ -1120,9 +1120,9 @@ The array must contain exactly one object with id ${newId}.`;
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-5 md:px-8 py-9 grid gap-8 lg:grid-cols-12 items-start">
+      <main className="max-w-6xl mx-auto px-5 md:px-8 py-9 flex flex-col gap-7">
         {/* ============ LEFT: DOCUMENT ============ */}
-        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both", position: "sticky", top: 24, alignSelf: "flex-start" }}>
+        <section style={{ animation: "ppFadeUp .6s .35s ease both" }}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 1</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>THE VENDOR'S DOCUMENT</h2>
@@ -1182,24 +1182,15 @@ The array must contain exactly one object with id ${newId}.`;
               </div>
             )}
 
-            <div className="relative rounded-xl overflow-hidden" style={{ border: "1px solid #E6E8EE" }}>
-              {docKey === "custom" ? (
+            {docKey === "custom" && !fileInfo && (
+              <div className="relative mb-3">
                 <textarea value={customText} onChange={(e) => { setCustomText(e.target.value); setFileInfo(null); setFilePages(null); }}
                   placeholder="…or paste any security policy, SOC 2 summary, or trust-center text here"
-                  className="w-full p-4 text-xs leading-relaxed outline-none"
-                  style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", background: "#FCFCFD", resize: "vertical", height: 230 }} />
-              ) : (
-                <div className="overflow-y-auto p-4 text-xs leading-relaxed whitespace-pre-wrap" style={{ background: "#FCFCFD", color: "#3A4154", height: 288 }}>
-                  {SAMPLE_DOCS[docKey].text}
-                </div>
-              )}
-              {loading && (
-                <>
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(91,91,214,.05), rgba(17,179,149,.05))" }} />
-                  <div className="absolute left-0 right-0" style={{ height: 3, background: `linear-gradient(90deg, transparent, ${INDIGO}, #11B395, transparent)`, boxShadow: `0 0 16px ${INDIGO}`, animation: "ppScan 1.8s ease-in-out infinite" }} />
-                </>
-              )}
-            </div>
+                  className="w-full p-3 text-xs leading-relaxed outline-none rounded-xl"
+                  style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", background: "#FCFCFD", border: "1px solid #E6E8EE", resize: "vertical", height: 110 }} />
+              </div>
+            )}
+
 
             <button onClick={runPrefill} disabled={loading || parsing}
               className="pp-btn mt-4 w-full rounded-xl px-4 py-3.5 text-sm font-bold text-white"
@@ -1236,7 +1227,7 @@ The array must contain exactly one object with id ${newId}.`;
         </section>
 
         {/* ============ RIGHT: ANSWERS ============ */}
-        <section className="lg:col-span-7" ref={resultsRef}>
+        <section ref={resultsRef}>
           <div className="flex items-center gap-2 mb-3 flex-wrap" style={{ animation: "ppFadeUp .6s .45s ease both" }}>
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 2</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>ANSWERS, FILLED WITH PROOF</h2>
@@ -1407,7 +1398,7 @@ The array must contain exactly one object with id ${newId}.`;
 
         {/* ============ STEP 3: ANSWER MAP ============ */}
         {results && (
-          <section className="lg:col-span-12" ref={mapRef} style={{ animation: "ppFadeUp .6s ease both" }}>
+          <section ref={mapRef} style={{ animation: "ppFadeUp .6s ease both" }}>
             <div className="flex items-center gap-2 mb-3 flex-wrap">
               <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 3</span>
               <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>ANSWER MAP - THE DOCUMENT, HIGHLIGHTED</h2>
