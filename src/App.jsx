@@ -892,9 +892,10 @@ The array must contain exactly one object with id ${newId}.`;
         )}
 
         {/* Action area */}
-        {!decision && (
+        {(!decision || (isActive && activeAction.type === "edit")) && (
           <div className="mt-4 pt-3.5" style={{ borderTop: "1px dashed #E6E8EE" }}>
             {!isActive ? (
+              decision ? null : (
               <div className="flex gap-2 flex-wrap">
                 {r.needs_review && (
                   <button onClick={() => { setActiveAction({ id: q.id, type: "approve" }); setDraft(""); }}
@@ -916,7 +917,7 @@ The array must contain exactly one object with id ${newId}.`;
                   </button>
                 )}
               </div>
-            ) : activeAction.type === "approve" ? (
+            )) : activeAction.type === "approve" ? (
               <div style={{ animation: "ppFadeUp .25s ease both" }}>
                 <label className="text-xs font-bold block mb-1.5" style={{ color: "#3A4154" }}>
                   Your note - what did you check or change? (optional)
@@ -1023,7 +1024,7 @@ The array must contain exactly one object with id ${newId}.`;
             )}
           </div>
         )}
-        {decision && (
+        {decision && !(isActive && activeAction.type === "edit") && (
           <div className="mt-3">
             <button onClick={() => openEdit(q, resultFor(q), decision)}
               className="text-xs font-semibold underline" style={{ color: VIOLET }}>
@@ -1414,7 +1415,7 @@ The array must contain exactly one object with id ${newId}.`;
               <div className="flex gap-4 mb-3 text-xs font-semibold flex-wrap" style={{ color: "#5A6072" }}>
                 <span className="inline-flex items-center gap-1.5"><span className="w-3 h-3 rounded inline-block" style={{ background: "rgba(16,185,129,.45)" }} /> Proof of an answer</span>
                 <span className="inline-flex items-center gap-1.5"><span className="w-3 h-3 rounded inline-block" style={{ background: "rgba(245,158,11,.5)" }} /> Related line (not a direct answer)</span>
-                <span className="inline-flex items-center gap-1.5"><span className="text-xs font-bold rounded-full" style={{ background: GREEN, color: "#fff", padding: "1px 8px" }}>Que 3</span> = Question Number</span>
+                <span className="inline-flex items-center gap-1.5"><span className="text-xs font-bold rounded-full" style={{ background: GREEN, color: "#fff", padding: "1px 8px" }}>Question Number N</span> = the question this line answers (N = its number)</span>
               </div>
               <div className="whitespace-pre-wrap rounded-lg mx-auto" style={{ background: "#FFFFFF", border: "1px solid #E2E4EC", boxShadow: "0 12px 34px rgba(26,31,54,.10)", color: "#1F2430", maxWidth: 820, padding: "34px 42px", fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 13, lineHeight: 1.95 }}>
                 <div style={{ borderBottom: "1px solid #E6E8EE", marginBottom: 18, paddingBottom: 10, fontFamily: "ui-sans-serif, system-ui, sans-serif", fontSize: 11, color: "#7A8094", fontWeight: 700, letterSpacing: ".04em" }}>
@@ -1435,7 +1436,7 @@ The array must contain exactly one object with id ${newId}.`;
                         }}
                         style={flashId === h.qid ? { animation: "ppFlash 1.4s ease both" } : undefined}>
                         {docText.slice(h.start, h.end)}
-                        <span className="font-bold ml-1 rounded-full" style={{ background: h.kind === "proof" ? GREEN : AMBER, color: "#fff", fontSize: 9, padding: "1px 7px", fontFamily: "ui-sans-serif, system-ui, sans-serif", verticalAlign: "middle", whiteSpace: "nowrap" }}>Que {h.qid}</span>
+                        <span className="font-bold ml-1 rounded-full" style={{ background: h.kind === "proof" ? GREEN : AMBER, color: "#fff", fontSize: 9, padding: "1px 8px", fontFamily: "ui-sans-serif, system-ui, sans-serif", verticalAlign: "middle", whiteSpace: "nowrap" }}>Question Number {h.qid}</span>
                       </span>
                     );
                     cursor = h.end;
