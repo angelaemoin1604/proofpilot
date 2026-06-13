@@ -240,24 +240,60 @@ function StatTile({ value, label, run }) {
   );
 }
 
-function FilterSelect({ label, value, onChange, options }) {
+function FilterPopover({ label, value, onChange, options }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
   const active = value !== "all";
+  const selectedLabel = (options.find(([v]) => v === value) || options[0])[1];
+  React.useEffect(() => {
+    function handleClick(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
   return (
-    <label className="pp-chipbtn inline-flex items-center gap-1 rounded-full pl-3 pr-1.5 py-1.5 text-xs font-bold cursor-pointer"
-      style={{
-        background: active ? "#EEF0FB" : "#fff",
-        border: active ? `1.5px solid ${INDIGO}` : "1.5px solid #DDE0E8",
-        color: "#5A6072",
-      }}>
-      {label}:
-      <select value={value} onChange={(e) => onChange(e.target.value)}
-        className="text-xs font-bold outline-none cursor-pointer"
-        style={{ color: INDIGO_DK, border: "none", background: "transparent" }}>
-        {options.map(([v, l]) => (
-          <option key={v} value={v}>{l}</option>
-        ))}
-      </select>
-    </label>
+    <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="pp-chipbtn inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-full"
+        style={{
+          background: active ? "#EEF0FB" : "#fff",
+          border: active ? `1.5px solid ${INDIGO}` : "1.5px solid #DDE0E8",
+          color: active ? INDIGO_DK : "#5A6072",
+        }}>
+        {label}{active ? ": " + selectedLabel : ""}
+        <span style={{ fontSize: 9, opacity: .7 }}>{open ? "▲" : "▼"}</span>
+      </button>
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 50,
+          background: "#fff", border: "1px solid #DDE0E8", borderRadius: 12,
+          boxShadow: "0 8px 28px rgba(26,31,54,.14)", padding: "6px 4px", minWidth: 180,
+          animation: "ppFadeUp .18s ease both",
+        }}>
+          {options.map(([v, l]) => {
+            const checked = value === v;
+            return (
+              <button key={v} onClick={() => { onChange(v); setOpen(false); }}
+                className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold"
+                style={{
+                  background: checked ? "#EEF0FB" : "transparent",
+                  color: checked ? INDIGO_DK : "#3A4154",
+                  border: "none",
+                  transition: "background .12s",
+                }}>
+                <span style={{
+                  width: 16, height: 16, borderRadius: 4, border: checked ? `2px solid ${INDIGO}` : "1.5px solid #C5C8D4",
+                  background: checked ? INDIGO : "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  {checked && <span style={{ color: "#fff", fontSize: 10, fontWeight: 900 }}>✓</span>}
+                </span>
+                {l}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1121,15 +1157,15 @@ The array must contain exactly one object with id ${newId}.`;
       </header>
 
       <main className="max-w-6xl mx-auto px-5 md:px-8 py-9 flex flex-col gap-7">
-        <div className="grid gap-7 lg:grid-cols-12 items-start">
+        <div className="grid gap-7 lg:grid-cols-12" style={{ alignItems: "stretch" }}>
         {/* ============ LEFT: DOCUMENT ============ */}
-        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both" }}>
+        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both", display: "flex", flexDirection: "column" }}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 1</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>THE VENDOR'S DOCUMENT</h2>
           </div>
 
-          <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)" }}>
+          <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)", flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
             <div className="flex gap-2 flex-wrap mb-4">
               {[["mature", SAMPLE_DOCS.mature.label], ["early", SAMPLE_DOCS.early.label], ["custom", "My own document"]].map(([k, label]) => (
                 <button key={k} onClick={() => { setDocKey(k); resetAll(); setFileInfo(null); setFileError(null); setFilePages(null); }}
@@ -1183,14 +1219,14 @@ The array must contain exactly one object with id ${newId}.`;
               </div>
             )}
 
-            <div className="relative rounded-xl overflow-hidden flex-1 min-h-0 mb-3" style={{ border: "1px solid #E6E8EE" }}>
+            <div className="relative rounded-xl overflow-hidden mb-3" style={{ border: "1px solid #E6E8EE", flex: 1, minHeight: 0 }}>
               {docKey === "custom" ? (
                 <textarea value={customText} onChange={(e) => { setCustomText(e.target.value); setFileInfo(null); setFilePages(null); }}
                   placeholder="…or paste any security policy, SOC 2 summary, or trust-center text here"
                   className="w-full h-full p-4 text-xs leading-relaxed outline-none"
                   style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", background: "#FCFCFD", resize: "none" }} />
               ) : (
-                <div className="overflow-y-auto p-4 text-xs leading-relaxed whitespace-pre-wrap h-full" style={{ background: "#FCFCFD", color: "#3A4154" }}>
+                <div className="overflow-y-auto p-4 text-xs leading-relaxed whitespace-pre-wrap" style={{ background: "#FCFCFD", color: "#3A4154", height: "100%", minHeight: 0 }}>
                   {SAMPLE_DOCS[docKey].text}
                 </div>
               )}
@@ -1283,14 +1319,6 @@ The array must contain exactly one object with id ${newId}.`;
 
           {results && (
             <div>
-              {fallbackCount > 0 && (
-                <div className="text-xs px-4 py-3 rounded-xl mb-4 font-medium" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B44", animation: "ppFadeUp .4s ease both" }}>
-                  {docKey === "mature"
-                    ? "Demo mode: " + (fallbackCount === total ? "live AI is not connected here, so the pre-computed sample run is shown" : fallbackCount + " of " + total + " answers come from the pre-computed sample run") + " - every feature still works."
-                    : "Live AI could not answer " + fallbackCount + " of " + total + " questions just now - those show the closest matching line from your document (keyword search) and are flagged for your review. Run again, or use the live environment, for verified answers with proof."}
-                </div>
-              )}
-
               {/* Summary panel */}
               <div className="rounded-2xl p-5 md:p-6 mb-5 flex items-center gap-6 flex-wrap relative overflow-hidden"
                 style={{ background: "linear-gradient(125deg, #5B5BD6 0%, #7C5CE0 45%, #11B395 100%)", backgroundSize: "180% 180%", animation: "ppGradient 12s ease infinite, ppScaleIn .5s ease both", boxShadow: "0 14px 36px rgba(91,91,214,.30)" }}>
@@ -1346,13 +1374,13 @@ The array must contain exactly one object with id ${newId}.`;
               {/* Filters - every dropdown defaults to All */}
               <div className="flex gap-2 mb-5 flex-wrap items-center">
                 <span className="text-xs font-bold" style={{ color: "#5A6072" }}>Filters:</span>
-                <FilterSelect label="Status" value={filter} onChange={setFilter}
+                <FilterPopover label="Status" value={filter} onChange={setFilter}
                   options={[["all", `All (${total})`], ["flagged", `Needs your review (${flagged})`], ["ready", `Verified (${auto})`]]} />
-                <FilterSelect label="Answer" value={ansFilter} onChange={setAnsFilter}
+                <FilterPopover label="Answer" value={ansFilter} onChange={setAnsFilter}
                   options={[["all", "All"], ["Yes", "Yes"], ["No", "No"], ["Partial", "Partial"], ["Not found", "Not found"]]} />
-                <FilterSelect label="Confidence" value={confFilter} onChange={setConfFilter}
+                <FilterPopover label="Confidence" value={confFilter} onChange={setConfFilter}
                   options={[["all", "All"], ["High", "High"], ["Medium", "Medium"], ["Low", "Low"]]} />
-                <FilterSelect label="Your decision" value={decisionFilter} onChange={setDecisionFilter}
+                <FilterPopover label="Your decision" value={decisionFilter} onChange={setDecisionFilter}
                   options={[["all", "All"], ["pending", "Awaiting review"], ["approved", "Approved"], ["edited", "Written by me"], ["followup", "Follow-up sent"]]} />
                 {(filter !== "all" || ansFilter !== "all" || confFilter !== "all" || decisionFilter !== "all" || searchQ) && (
                   <button onClick={() => { setFilter("all"); setAnsFilter("all"); setConfFilter("all"); setDecisionFilter("all"); setSearchQ(""); }}
