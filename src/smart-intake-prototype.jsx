@@ -1120,9 +1120,9 @@ The array must contain exactly one object with id ${newId}.`;
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-5 md:px-8 py-9 grid gap-8 lg:grid-cols-12">
+      <main className="max-w-6xl mx-auto px-5 md:px-8 py-9 grid gap-8 lg:grid-cols-12 items-start">
         {/* ============ LEFT: DOCUMENT ============ */}
-        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both" }}>
+        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both", position: "sticky", top: 24, alignSelf: "flex-start" }}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 1</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>THE VENDOR'S DOCUMENT</h2>
