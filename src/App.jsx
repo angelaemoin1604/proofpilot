@@ -1157,15 +1157,15 @@ The array must contain exactly one object with id ${newId}.`;
       </header>
 
       <main className="max-w-6xl mx-auto px-5 md:px-8 py-9 flex flex-col gap-7">
-        <div className="grid gap-7 lg:grid-cols-12" style={{ alignItems: "stretch" }}>
+        <div className="grid gap-7 lg:grid-cols-12" style={{ alignItems: "start" }}>
         {/* ============ LEFT: DOCUMENT ============ */}
-        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both", display: "flex", flexDirection: "column" }}>
+        <section className="lg:col-span-5" style={{ animation: "ppFadeUp .6s .35s ease both" }}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 1</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>THE VENDOR'S DOCUMENT</h2>
           </div>
 
-          <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)", flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+          <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)" }}>
             <div className="flex gap-2 flex-wrap mb-4">
               {[["mature", SAMPLE_DOCS.mature.label], ["early", SAMPLE_DOCS.early.label], ["custom", "My own document"]].map(([k, label]) => (
                 <button key={k} onClick={() => { setDocKey(k); resetAll(); setFileInfo(null); setFileError(null); setFilePages(null); }}
@@ -1219,7 +1219,7 @@ The array must contain exactly one object with id ${newId}.`;
               </div>
             )}
 
-            <div className="relative rounded-xl overflow-hidden mb-3" style={{ border: "1px solid #E6E8EE", flex: 1, minHeight: 0 }}>
+            <div className="relative rounded-xl overflow-hidden mb-3" style={{ border: "1px solid #E6E8EE", height: 280, overflow: "hidden" }}>
               {docKey === "custom" ? (
                 <textarea value={customText} onChange={(e) => { setCustomText(e.target.value); setFileInfo(null); setFilePages(null); }}
                   placeholder="…or paste any security policy, SOC 2 summary, or trust-center text here"
@@ -1349,6 +1349,62 @@ The array must contain exactly one object with id ${newId}.`;
                   </div>
                 </div>
               )}
+
+              {/* ── Component A: Confidence Breakdown ── */}
+              <div className="bg-white rounded-2xl p-5 mb-4" style={{ border: "1px solid #E6E8EE", boxShadow: "0 4px 16px rgba(26,31,54,.05)", animation: "ppFadeUp .5s .1s ease both" }}>
+                <p className="text-xs font-bold uppercase tracking-wide mb-4 m-0" style={{ color: "#5A6072", letterSpacing: ".07em" }}>Confidence Breakdown</p>
+                {[
+                  { label: "High confidence", value: results ? results.filter(r => r.confidence === "High").length : 0, total: results ? results.length : 1, color: "#059669", bg: "#D1FAE5" },
+                  { label: "Medium confidence", value: results ? results.filter(r => r.confidence === "Medium").length : 0, total: results ? results.length : 1, color: "#D97706", bg: "#FEF3C7" },
+                  { label: "Low confidence", value: results ? results.filter(r => r.confidence === "Low").length : 0, total: results ? results.length : 1, color: "#DC2626", bg: "#FEE2E2" },
+                ].map(row => (
+                  <div key={row.label} className="mb-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-semibold" style={{ color: "#3A4154" }}>{row.label}</span>
+                      <span className="text-xs font-bold" style={{ color: row.color }}>{row.value} of {results ? results.length : 0}</span>
+                    </div>
+                    <div className="rounded-full overflow-hidden" style={{ height: 8, background: "#F1F2F6" }}>
+                      <div className="h-full rounded-full transition-all" style={{
+                        width: results && results.length > 0 ? (row.value / results.length * 100) + "%" : "0%",
+                        background: row.color,
+                        transition: "width 1s cubic-bezier(.22,1,.36,1)"
+                      }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* ── Component B: Processing Timeline ── */}
+              <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 4px 16px rgba(26,31,54,.05)", animation: "ppFadeUp .5s .2s ease both" }}>
+                <p className="text-xs font-bold uppercase tracking-wide mb-4 m-0" style={{ color: "#5A6072", letterSpacing: ".07em" }}>Processing Timeline</p>
+                {[
+                  { label: "Document parsed", done: true },
+                  { label: "Security controls mapped", done: true },
+                  { label: "Confidence scores assigned", done: true },
+                  { label: "Flagged items routed for review", done: flagged > 0 },
+                  { label: "Human review complete", done: allResolved },
+                  { label: "Awaiting sign-off", done: allResolved },
+                ].map((step, i) => (
+                  <div key={step.label} className="flex items-start gap-3" style={{ marginBottom: i < 5 ? 12 : 0 }}>
+                    <div className="flex flex-col items-center" style={{ width: 20, flexShrink: 0 }}>
+                      <div style={{
+                        width: 20, height: 20, borderRadius: "50%", flexShrink: 0,
+                        background: step.done ? "#059669" : "#F1F2F6",
+                        border: step.done ? "none" : "1.5px solid #DDE0E8",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        animation: step.done ? "ppPop .4s ease both" : "none",
+                      }}>
+                        {step.done
+                          ? <span style={{ color: "#fff", fontSize: 10, fontWeight: 900 }}>✓</span>
+                          : <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#C5C8D4", display: "block" }} />}
+                      </div>
+                      {i < 5 && <div style={{ width: 2, flex: 1, minHeight: 12, background: step.done ? "#059669" : "#E6E8EE", marginTop: 3, borderRadius: 2 }} />}
+                    </div>
+                    <p className="text-xs m-0 pt-0.5 font-semibold" style={{ color: step.done ? "#1A1F36" : "#9AA0B0" }}>{step.label}</p>
+                  </div>
+                ))}
+              </div>
+
             </div>
           )}
         </section>
