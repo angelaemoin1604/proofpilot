@@ -1121,14 +1121,15 @@ The array must contain exactly one object with id ${newId}.`;
       </header>
 
       <main className="max-w-6xl mx-auto px-5 md:px-8 py-9 flex flex-col gap-7">
+        <div className="grid gap-7 lg:grid-cols-12" style={{ height: "85vh" }}>
         {/* ============ LEFT: DOCUMENT ============ */}
-        <section style={{ animation: "ppFadeUp .6s .35s ease both" }}>
+        <section className="lg:col-span-5 flex flex-col min-h-0" style={{ animation: "ppFadeUp .6s .35s ease both" }}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 1</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>THE VENDOR'S DOCUMENT</h2>
           </div>
 
-          <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)" }}>
+          <div className="bg-white rounded-2xl p-5 flex-1 flex flex-col min-h-0" style={{ border: "1px solid #E6E8EE", boxShadow: "0 6px 24px rgba(26,31,54,.05)" }}>
             <div className="flex gap-2 flex-wrap mb-4">
               {[["mature", SAMPLE_DOCS.mature.label], ["early", SAMPLE_DOCS.early.label], ["custom", "My own document"]].map(([k, label]) => (
                 <button key={k} onClick={() => { setDocKey(k); resetAll(); setFileInfo(null); setFileError(null); setFilePages(null); }}
@@ -1182,14 +1183,24 @@ The array must contain exactly one object with id ${newId}.`;
               </div>
             )}
 
-            {docKey === "custom" && !fileInfo && (
-              <div className="relative mb-3">
+            <div className="relative rounded-xl overflow-hidden flex-1 min-h-0 mb-3" style={{ border: "1px solid #E6E8EE" }}>
+              {docKey === "custom" ? (
                 <textarea value={customText} onChange={(e) => { setCustomText(e.target.value); setFileInfo(null); setFilePages(null); }}
                   placeholder="…or paste any security policy, SOC 2 summary, or trust-center text here"
-                  className="w-full p-3 text-xs leading-relaxed outline-none rounded-xl"
-                  style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", background: "#FCFCFD", border: "1px solid #E6E8EE", resize: "vertical", height: 110 }} />
-              </div>
-            )}
+                  className="w-full h-full p-4 text-xs leading-relaxed outline-none"
+                  style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", background: "#FCFCFD", resize: "none" }} />
+              ) : (
+                <div className="overflow-y-auto p-4 text-xs leading-relaxed whitespace-pre-wrap h-full" style={{ background: "#FCFCFD", color: "#3A4154" }}>
+                  {SAMPLE_DOCS[docKey].text}
+                </div>
+              )}
+              {loading && (
+                <>
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(91,91,214,.05), rgba(17,179,149,.05))" }} />
+                  <div className="absolute left-0 right-0" style={{ height: 3, background: `linear-gradient(90deg, transparent, ${INDIGO}, #11B395, transparent)`, boxShadow: `0 0 16px ${INDIGO}`, animation: "ppScan 1.8s ease-in-out infinite" }} />
+                </>
+              )}
+            </div>
 
 
             <button onClick={runPrefill} disabled={loading || parsing}
@@ -1227,7 +1238,7 @@ The array must contain exactly one object with id ${newId}.`;
         </section>
 
         {/* ============ RIGHT: ANSWERS ============ */}
-        <section ref={resultsRef}>
+        <section ref={resultsRef} className="lg:col-span-7 flex flex-col min-h-0">
           <div className="flex items-center gap-2 mb-3 flex-wrap" style={{ animation: "ppFadeUp .6s .45s ease both" }}>
             <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ background: INDIGO }}>STEP 2</span>
             <h2 className="text-sm font-bold tracking-wide" style={{ color: "#5A6072" }}>ANSWERS, FILLED WITH PROOF</h2>
@@ -1343,7 +1354,7 @@ The array must contain exactly one object with id ${newId}.`;
                 )}
               </div>
 
-              <div className="overflow-y-auto pr-1" style={{ maxHeight: "78vh", scrollbarWidth: "thin" }}>
+              <div className="overflow-y-auto pr-1 flex-1" style={{ minHeight: 0, scrollbarWidth: "thin" }}>
               {groups.map((g) => (
                 <div key={g.key} className="mb-7">
                   <div className="flex items-center gap-2 mb-3 sticky top-0 z-10 py-1" style={{ background: "linear-gradient(180deg, #F6F7FF 75%, transparent)" }}>
@@ -1395,6 +1406,7 @@ The array must contain exactly one object with id ${newId}.`;
             </div>
           )}
         </section>
+        </div>
 
         {/* ============ STEP 3: ANSWER MAP ============ */}
         {results && (
