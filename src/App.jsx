@@ -1352,9 +1352,10 @@ The array must contain exactly one object with id ${newId}.`;
                 )}
               </div>
 
+              <div className="overflow-y-auto pr-1" style={{ maxHeight: "78vh", scrollbarWidth: "thin" }}>
               {groups.map((g) => (
                 <div key={g.key} className="mb-7">
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-3 sticky top-0 z-10 py-1" style={{ background: "linear-gradient(180deg, #F6F7FF 75%, transparent)" }}>
                     <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: g.color }} />
                     <h3 className="text-sm font-bold m-0" style={{ color: INK }}>{g.title}</h3>
                     <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: `${g.color}1A`, color: g.color }}>
@@ -1369,6 +1370,7 @@ The array must contain exactly one object with id ${newId}.`;
                   )}
                 </div>
               ))}
+              </div>
 
               {/* Ask your own question */}
               <div className="rounded-2xl p-5 mb-4 bg-white" style={{ border: "1.5px solid #C9C9F2", boxShadow: "0 6px 20px rgba(91,91,214,.10)" }}>
@@ -1417,7 +1419,7 @@ The array must contain exactly one object with id ${newId}.`;
                 <span className="inline-flex items-center gap-1.5"><span className="w-3 h-3 rounded inline-block" style={{ background: "rgba(245,158,11,.5)" }} /> Related line (not a direct answer)</span>
                 <span className="inline-flex items-center gap-1.5"><span className="text-xs font-bold rounded-full" style={{ background: GREEN, color: "#fff", padding: "1px 8px" }}>Question Number N</span> = the question this line answers (N = its number)</span>
               </div>
-              <div className="whitespace-pre-wrap rounded-lg mx-auto" style={{ background: "#FFFFFF", border: "1px solid #E2E4EC", boxShadow: "0 12px 34px rgba(26,31,54,.10)", color: "#1F2430", maxWidth: 820, padding: "34px 42px", fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 13, lineHeight: 1.95 }}>
+              <div className="whitespace-pre-wrap rounded-lg mx-auto overflow-y-auto" style={{ background: "#FFFFFF", border: "1px solid #E2E4EC", boxShadow: "0 12px 34px rgba(26,31,54,.10)", color: "#1F2430", maxWidth: 820, height: "80vh", padding: "34px 42px", fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 13, lineHeight: 1.95 }}>
                 <div style={{ borderBottom: "1px solid #E6E8EE", marginBottom: 18, paddingBottom: 10, fontFamily: "ui-sans-serif, system-ui, sans-serif", fontSize: 11, color: "#7A8094", fontWeight: 700, letterSpacing: ".04em" }}>
                   📄 {docKey === "custom" ? (fileInfo ? fileInfo.name : "Pasted document") : SAMPLE_DOCS[docKey].label} - with every answer highlighted in place
                 </div>
